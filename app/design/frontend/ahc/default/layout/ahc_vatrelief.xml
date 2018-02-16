@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<layout version="0.1.0">
+
+<checkout_onepage_index>
+	<reference name="checkout.onepage">
+		<!-- Extra step added to OnePage Checkout -->
+		<block type="vatrelief/onepage_vatrelief" name="checkout.onepage.vatrelief" as="vatrelief" after="checkout.onepage.billing" template="ahc_vatrelief/checkout/onepage/vatrelief.phtml"/>		
+	</reference>
+</checkout_onepage_index>
+</layout>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <AHC_VatRelief>
+      <active>true</active>
+      <codePool>local</codePool>
+    </AHC_VatRelief>
+  </modules>
+</config>

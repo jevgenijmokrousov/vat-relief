@@ -1,0 +1,58 @@
+<form id="co-vatrelief-form" action="">
+<ul class="form-list">
+    <li>
+        <p>If you are in any doubt as to whether you are eligible to receive goods or services zero-rated for VAT you should consult VAT Notice 701/7 VAT reliefs for disabled people or contact the National Advice Service on 0300 200 3700 before signing the declaration.</p>
+        <p><sub>Click here to visit the relevant page of the <a href="https://alpinehc.co.uk/vatrelief" target="_blank">hmrc.gov.uk website</a>.</sub></p>
+        <input id="vatrelief-claimer" type="checkbox" name="vatreliefclaim" value="true" /> <label for="vatrelief-claimer">Do you wish to claim VAT Relief?</label>
+    </li>
+    <li class="vatrelief-type" style="display:none">
+        <legend>What kind of VAT Relief would you like to claim?<br /><sub>Purchases may be made on the behalf of someone claiming VAT Relief. In this instance that individual must ultimately be the one funding the purchase, even if they are not currently the one making the payment to Alpine HC. Should this be the case, please complete the form below using their details.</sub></legend>
+        <ul>
+            <li><input id="vatrelief-type-individual" type="radio" name="vatrelieftype" value="individual" /> <label for="vatrelief-type-individual">Individual</label></li>
+            <li><input id="vatrelief-type-charity" type="radio" name="vatrelieftype" value="charity" /> <label for="vatrelief-type-charity">Charity</label></li>
+        </ul>
+    </li>
+	<li class="vatrelief-individual" style="display:none">
+		<label for="vatrelief-individual_name" class="required"><em>*</em>Individual's Name</label>
+		<div class="input-box">
+		     <input type="text" id="vatrelief-individual_name" name="individual_name" value="" title="Individual's Name" maxlength="255" class="input-text required-entry" />
+		</div>
+	</li>
+	<li class="vatrelief-individual" style="display:none">
+		<label for="vatrelief-condition" class="required"><em>*</em>The individual is chronically sick or have a disabling condition by reason of:</label>
+		<div class="input-box">
+			<input type="text" id="vatrelief-condition" name="individual_condition" value="" title="Individual's Condition" maxlength="255" class="input-text required-entry" />
+		</div>
+	</li>
+	<li class="vatrelief-charity" style="display:none">
+        <label for="vatrelief-charity_name" class="required"><em>*</em>Charity Name</label>
+		<div class="input-box">
+			<input type="text" id="vatrelief-charity_name" name="charity_name" value="" title="Charity Name" maxlength="255" class="input-text required-entry" />
+		</div>
+	</li>
+    <li class="vatrelief-charity" style="display:none">
+        <label for="vatrelief-charity_number" class="required"><em>*</em>Charity Number</label>
+        <div class="input-box">
+            <input type="text" id="vatrelief-charity_number" name="charity_number" value="" title="Charity Number" maxlength="255" class="input-text required-entry" />
+        </div>
+    </li>
+    <li class="vatrelief-smallprint" style="display:none">
+        <p><sub>I understand that, by completing this form and processing this order, I am digitally signing to agree that the details I have provided above qualify me for relief from value added tax.</sub></p>
+    </li>
+</ul>
+</form>
+
+
+<div class="button-set">
+    <div id="vatrelief-buttons-container">
+        <button type="button" class="button validation-passed" onclick="vatrelief.save();"><span><?php echo $this->__('Continue') ?></span></button>
+        <span id="vatrelief-please-wait" style="display:none;" class="opc-please-wait">
+            <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt="" /> &nbsp; <?php echo $this->__('Loading next step...') ?> &nbsp;
+        </span>
+    </div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+    VatRelief = Class.create(); VatRelief.prototype = { initialize: function(form, saveUrl){ this.form = form; if ($(this.form)) { $(this.form).observe('submit', function(event){this.save();Event.stop(event);}.bind(this)); } this.saveUrl = saveUrl; this.onSave = this.nextStep.bindAsEventListener(this); this.onComplete = this.resetLoadWaiting.bindAsEventListener(this); }, save: function(){ if (checkout.loadWaiting!=false) return; var validator = new Validation(this.form); if (validator.validate()) { checkout.setLoadWaiting('vatrelief'); var request = new Ajax.Request( this.saveUrl, { method: 'post', onComplete: this.onComplete, onSuccess: this.onSave, onFailure: checkout.ajaxFailure.bind(checkout), parameters: Form.serialize(this.form) } ); } }, resetLoadWaiting: function(transport){ checkout.setLoadWaiting(false); }, nextStep: function(transport){ if (transport && transport.responseText){ try{ response = eval('(' + transport.responseText + ')'); } catch (e) { response = {}; } } if (response.error){ if ((typeof response.message) == 'string') { alert(response.message); } else { if (window.billingRegionUpdater) { billingRegionUpdater.update(); } alert(response.message.join("\n")); } return false; } checkout.setStepResponse(response); } } var vatrelief = new VatRelief('co-vatrelief-form', '<?php echo $this->getUrl('checkout/onepage/saveVatRelief') ?>'); var $jQuery = jQuery.noConflict(); $jQuery('#vatrelief-claimer').on('click',function(){ if($jQuery(this).is(':checked')){ $jQuery('.vatrelief-type').show().find('input').prop('disabled', false); } else { $jQuery('.vatrelief-type').hide().find('input').prop('disabled', true); $jQuery('.vatrelief-individual').hide().find('input').prop('disabled', true); $jQuery('.vatrelief-charity').hide().find('input').prop('disabled', true); $jQuery('.vatrelief-smallprint').hide().find('input').prop('disabled', true); } }); $jQuery('#vatrelief-type-individual,#vatrelief-type-charity').on('click', function() { var value = $jQuery('form#co-vatrelief-form input:radio[name=vatrelieftype]:checked').val(); if(value == 'individual'){ $jQuery('.vatrelief-individual').show().find('input').prop('disabled', false); $jQuery('.vatrelief-charity').hide().find('input').prop('disabled', true); } else if(value == 'charity'){ $jQuery('.vatrelief-charity').show().find('input').prop('disabled', false); $jQuery('.vatrelief-individual').hide().find('input').prop('disabled', true); } $jQuery('.vatrelief-smallprint').show(); });
+//]]>
+</script>
