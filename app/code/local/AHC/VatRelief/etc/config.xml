@@ -1,0 +1,175 @@
+<config>
+    <modules>
+        <AHC_VatRelief>
+            <version>0.1.0</version>
+        </AHC_VatRelief>
+    </modules>
+    <global>
+        <models>
+            <vatrelief>
+                <class>AHC_VatRelief_Model</class>
+                <resourceModel>vatrelief_resource</resourceModel>
+            </vatrelief>
+            <vatrelief_resource>
+                <class>AHC_VatRelief_Model_Resource</class>
+                <entities>
+                    <customerdata>
+                        <table>vatrelief_customer_data</table>
+                    </customerdata>
+                </entities>
+            </vatrelief_resource>
+            <checkout>
+                <rewrite>
+                    <type_onepage>AHC_VatRelief_Model_Type_Onepage</type_onepage>
+                </rewrite>
+            </checkout>
+        </models>
+
+        <helpers>
+            <vatrelief>
+                <class>AHC_VatRelief_Helper</class>
+            </vatrelief>
+        </helpers>
+
+        <blocks>
+            <checkout>
+                <rewrite>
+                    <onepage>AHC_VatRelief_Block_Onepage</onepage>
+                </rewrite>
+            </checkout>
+
+            <vatrelief>
+                <class>AHC_VatRelief_Block</class>
+            </vatrelief>
+
+            <vatreliefonepage>
+                <class>AHC_VatRelief_Block_Onepage</class>
+            </vatreliefonepage>
+            
+        </blocks>
+
+        <rewrite>
+            <ahc_vatrelief_onepage>
+                <from><![CDATA[#^/checkout/onepage/#]]></from>
+                <to>/vatrelief/onepage/</to>
+            </ahc_vatrelief_onepage>
+        </rewrite>
+        <resources>
+            <ahc_vatrelief_setup>
+                <setup>
+                    <module>AHC_VatRelief</module>
+                </setup>
+            </ahc_vatrelief_setup>
+        </resources>
+        <events>
+            <sales_quote_collect_totals_before>
+                <observers>
+                    <ahc_vatrelief_customergroup_observer>
+                        <type>singleton</type>
+                        <class>AHC_VatRelief_Model_Customer_Observer</class>
+                        <method>updateCustomerGroup</method>
+                    </ahc_vatrelief_customergroup_observer>
+                </observers>
+            </sales_quote_collect_totals_before>
+<!--            <sales_order_invoice_save_after>
+                <observers>
+                    <vatrelief_order_export>
+                        <type>singleton</type>
+                        <class>AHC_VatRelief_Model_Observer</class>
+                        <method>orderExport</method>
+                    </vatrelief_order_export>
+                </observers>
+            </sales_order_invoice_save_after>-->
+        </events>
+    </global>
+    <frontend>
+        <routers>
+            <ahc_vatrelief>
+                <use>standard</use>
+                <args>
+                    <module>AHC_VatRelief</module>
+                    <frontName>vatrelief</frontName>
+                </args>
+            </ahc_vatrelief>
+
+        </routers>
+        <events>
+            <checkout_onepage_controller_success_action>
+                <observers>
+                    <vatrelief_order_success>
+                        <type>singleton</type>
+                        <class>AHC_VatRelief_Model_Observer</class>
+                        <method>hookToOrderSaveEvent</method>
+                    </vatrelief_order_success>
+                </observers>
+            </checkout_onepage_controller_success_action>
+        </events>
+        <layout>
+            <updates>
+                <ahc_vatrelief>
+                    <file>ahc_vatrelief.xml</file>
+                </ahc_vatrelief>
+            </updates>
+        </layout>
+    </frontend>
+    <admin>
+        <routers>
+            <ahc_vatrelief>
+                <use>admin</use>
+                <args>
+                    <module>AHC_VatRelief</module>
+                    <frontName>vatrelief</frontName>
+                </args>
+            </ahc_vatrelief>
+        </routers>
+    </admin>
+    <adminhtml>
+        <menu>
+            <vatrelief module="vatrelief">
+                <title>AHC</title>
+                <sort_order>71</sort_order>              
+                <children>
+                    <exportdata translate="title" module="vatrelief">
+                        <title>Export Data</title>
+                        <sort_order>1</sort_order>
+                        <action>vatrelief/adminhtml_exportdata</action>
+                    </exportdata>
+                </children>
+            </vatrelief>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <vatrelief translate="title" module="vatrelief">
+                            <title>AHC</title>
+                            <sort_order>70</sort_order>
+                            <children>
+                                <exportdata translate="title">
+                                    <title>Export Data</title>
+                                    <sort_order>10</sort_order>
+                                </exportdata>
+                            </children>
+                        </vatrelief>
+                    </children>
+                </admin>
+                
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <vatrelief translate="title">
+                                            <title>Vat Relief Information</title>
+                                        </vatrelief>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+</config>
